@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86
+description: floatingwidget
+author: Rainer
+license: Specify your license
+copyright: Copyright (c) 2020 by Your Company
+
+# these should not be edited
+name: floatingwidget
+moduleid: ti.floatingwidget
+guid: 5c911e23-3447-40f9-bee6-f4845a528611
+platform: android
+minsdk: 8.3.0.GA
