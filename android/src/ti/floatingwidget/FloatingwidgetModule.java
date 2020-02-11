@@ -8,6 +8,8 @@
  */
 package ti.floatingwidget;
 
+import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 
@@ -23,27 +25,22 @@ import android.provider.Settings;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 
-
-@Kroll.module(name="Floatingwidget", id="ti.floatingwidget")
-public class FloatingwidgetModule extends KrollModule
-{
+@Kroll.module(name = "Floatingwidget", id = "ti.floatingwidget",propertyAccessors = { "onSuccess" })
+public class FloatingwidgetModule extends KrollModule {
 
 	// Standard Debugging variables
 	private static final String LCAT = "FloatingwidgetModule";
-	private static final boolean DBG = TiConfig.LOGD;
-	 private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
-	// You can define constants with @Kroll.constant, for example:
+	private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
+
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
-	public FloatingwidgetModule()
-	{
+	public FloatingwidgetModule() {
 		super();
 	}
 
 	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app)
-	{
-		
+	public static void onAppCreate(TiApplication app) {
+
 	}
 
 	private final class PermissionResultHandler implements TiActivityResultHandler {
@@ -51,34 +48,26 @@ public class FloatingwidgetModule extends KrollModule
 			Log.e(LCAT, e.getMessage());
 		}
 
-		public void onResult(Activity dummy, int requestCode, int resultCode,
-				Intent data) {
-
-		
+		public void onResult(Activity dummy, int requestCode, int resultCode, Intent data) {
 			if (requestCode == SYSTEM_ALERT_WINDOW_PERMISSION) {
-				
+				if (hasProperty("onSuccess")) {
+					KrollFunction onSuccess = (KrollFunction) (getProperty("onSuccess"));
+					KrollDict res = new KrollDict();
+					res.put("result", resultCode);
+					onSuccess.callAsync(getKrollObject(), res);
+				}
 			}
 		}
-	}	
+	}
 
 	// Properties
 	@Kroll.method
-	public void askPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + TiApplication.getAppCurrentActivity().getPackageName()));
-        final TiActivitySupport activitySupport = (TiActivitySupport) TiApplication
-				.getInstance().getCurrentActivity();
+	public void requestPermission() {
+		Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+				Uri.parse("package:" + TiApplication.getAppCurrentActivity().getPackageName()));
+		final TiActivitySupport activitySupport = (TiActivitySupport) TiApplication.getInstance().getCurrentActivity();
 
-        activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION,new  PermissionResultHandler());
-    }
-	
-	
-
-	@Kroll.method
-	@Kroll.setProperty
-	public void setExampleProp(String value) {
-		Log.d(LCAT, "set example property: " + value);
+		activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION, new PermissionResultHandler());
 	}
 
 }
-
