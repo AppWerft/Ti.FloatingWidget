@@ -12,6 +12,14 @@ import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.util.TiActivityResultHandler;
+import org.appcelerator.titanium.util.TiActivitySupport;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 
@@ -23,7 +31,7 @@ public class FloatingwidgetModule extends KrollModule
 	// Standard Debugging variables
 	private static final String LCAT = "FloatingwidgetModule";
 	private static final boolean DBG = TiConfig.LOGD;
-
+	 private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
@@ -35,27 +43,36 @@ public class FloatingwidgetModule extends KrollModule
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app)
 	{
-		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is created
+		
 	}
 
-	// Methods
-	@Kroll.method
-	public String example()
-	{
-		Log.d(LCAT, "example called");
-		return "hello world";
-	}
+	private final class PermissionResultHandler implements TiActivityResultHandler {
+		public void onError(Activity arg0, int arg1, Exception e) {
+			Log.e(LCAT, e.getMessage());
+		}
+
+		public void onResult(Activity dummy, int requestCode, int resultCode,
+				Intent data) {
+
+		
+			if (requestCode == SYSTEM_ALERT_WINDOW_PERMISSION) {
+				
+			}
+		}
+	}	
 
 	// Properties
 	@Kroll.method
-	@Kroll.getProperty
-	public String getExampleProp()
-	{
-		Log.d(LCAT, "get example property");
-		return "hello world";
-	}
+	public void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + TiApplication.getAppCurrentActivity().getPackageName()));
+        final TiActivitySupport activitySupport = (TiActivitySupport) TiApplication
+				.getInstance().getCurrentActivity();
 
+        activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION,new  PermissionResultHandler());
+    }
+	
+	
 
 	@Kroll.method
 	@Kroll.setProperty
