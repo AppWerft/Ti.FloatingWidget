@@ -16,15 +16,28 @@ const content = Ti.UI.createView({
 		height : 100,
 		backgroundColor : 'orange'
 });
-FW.requestPermission();
+content.add(Ti.UI.createLabel({
+	text : "Title",
+	top:0,
+	height:20,
+	width:Ti.UI.FILL,
+	backgroundColor:'yellow'
+}));
+
 FW.onResult = function(e) {
 	if (e.result == FW.RESULT_OK) {
-		fwView = FW.createView(content);
+		fwView = FW.createWidget(content);
 	}	
 }
-
+FW.requestPermission();
 
 // ...
 fwView.destroy();
 
 ```
+Alternativally you can listen to "result":
+
+```javascript
+FW.addEventListener("result",onResultFn);
+```
+
