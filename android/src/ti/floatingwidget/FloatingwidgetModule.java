@@ -24,15 +24,19 @@ import android.provider.Settings;
 
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
+import org.appcelerator.kroll.common.TiMessenger;
 
-@Kroll.module(name = "Floatingwidget", id = "ti.floatingwidget",propertyAccessors = { "onSuccess" })
+@Kroll.module(name = "Floatingwidget", id = "ti.floatingwidget", propertyAccessors = { "onResult" })
 public class FloatingwidgetModule extends KrollModule {
 
 	// Standard Debugging variables
 	private static final String LCAT = "FloatingwidgetModule";
 	private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
 
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
+	@Kroll.constant
+	public static final int RESULT_OK = Activity.RESULT_OK;
+	@Kroll.constant
+	public static final int RESULT_CANCELED = Activity.RESULT_CANCELED;
 
 	public FloatingwidgetModule() {
 		super();
@@ -50,24 +54,37 @@ public class FloatingwidgetModule extends KrollModule {
 
 		public void onResult(Activity dummy, int requestCode, int resultCode, Intent data) {
 			if (requestCode == SYSTEM_ALERT_WINDOW_PERMISSION) {
-				if (hasProperty("onSuccess")) {
-					KrollFunction onSuccess = (KrollFunction) (getProperty("onSuccess"));
-					KrollDict res = new KrollDict();
-					res.put("result", resultCode);
-					onSuccess.callAsync(getKrollObject(), res);
+				// or in this
+				// https://riptutorial.com/android/example/24633/granting-system-alert-window-permission-on-android-6-0-and-above
+				KrollDict res = new KrollDict();
+				res.put("result", resultCode);
+				res.put("success", resultCode == Activity.RESULT_OK ? true : false);
+				if (hasProperty("onResult")) {
+					KrollFunction onResult = (KrollFunction) (getProperty("onResult"));
+					onResult.callAsync(getKrollObject(), res);
 				}
+				if (hasListeners("result"))
+					fireEvent("result", res);
 			}
 		}
 	}
 
-	// Properties
 	@Kroll.method
 	public void requestPermission() {
-		Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+		final Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
 				Uri.parse("package:" + TiApplication.getAppCurrentActivity().getPackageName()));
 		final TiActivitySupport activitySupport = (TiActivitySupport) TiApplication.getInstance().getCurrentActivity();
-
-		activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION, new PermissionResultHandler());
+		if (TiApplication.isUIThread()) {
+			activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION,
+					new PermissionResultHandler());
+		} else {
+			TiMessenger.postOnMain(new Runnable() {
+				@Override
+				public void run() {
+					activitySupport.launchActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION,
+							new PermissionResultHandler());
+				}
+			});
+		}
 	}
-
 }
