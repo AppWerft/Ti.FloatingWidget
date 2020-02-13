@@ -24,13 +24,9 @@ content.add(Ti.UI.createLabel({
 	backgroundColor:'yellow'
 }));
 
-FW.onResult = function(e) {
-	if (e.result == FW.RESULT_OK) {
-			}	
-}
-FW.requestPermission();
 if (FW.canDrawOverlays())
 	fwView = FW.createWidget(content);
+else FW.requestPermission();
 
 // ...
 fwView.destroy();
