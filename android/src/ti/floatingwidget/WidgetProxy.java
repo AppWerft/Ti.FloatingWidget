@@ -37,26 +37,28 @@ public class WidgetProxy extends KrollProxy {
 		super();
 		windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 	}
- 
-	
+
 	@Kroll.method
 	public void destroy() {
-		 if (view != null) windowManager.removeView(view);
+		if (view != null)
+			windowManager.removeView(view);
 	}
+
 	@Override
 	public void handleCreationArgs(KrollModule module, Object[] o) {
 		super.handleCreationArgs(module, o);
+		Log.d(LCAT,"handleCreationArgs " + o.length);
 		if (o[0] instanceof ViewProxy) {
 			ViewProxy vProxy = (ViewProxy) o[0];
 			tiview = vProxy.getOrCreateView();
-			view=tiview.getNativeView();
+			view = tiview.getNativeView();
 			final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 					WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
 					WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 					PixelFormat.TRANSLUCENT);
-			
+
 			windowManager.addView(view, params);
-			
+
 			view.setOnTouchListener(new View.OnTouchListener() {
 				private int initialX;
 				private int initialY;
@@ -83,7 +85,8 @@ public class WidgetProxy extends KrollProxy {
 					return false;
 				}
 			});
-			
-		} else Log.e(LCAT,"Paramzer must be a viewproxy!");
+
+		} else
+			Log.e(LCAT, "Paramzer must be a viewproxy!");
 	}
 }
