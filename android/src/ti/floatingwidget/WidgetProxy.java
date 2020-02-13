@@ -34,6 +34,7 @@ public class WidgetProxy extends KrollProxy {
 	// Constructor
 	public WidgetProxy() {
 		super();
+		windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 	}
  
 	
@@ -79,7 +80,6 @@ public class WidgetProxy extends KrollProxy {
 				}
 			});
 			// getting windows services and adding the floating view to it
-			windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 			windowManager.addView(view, params);
 		}
 	}
