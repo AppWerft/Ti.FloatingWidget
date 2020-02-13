@@ -70,6 +70,11 @@ public class FloatingwidgetModule extends KrollModule {
 	}
 
 	@Kroll.method
+	public boolean hasPermissions() {
+		return Settings.canDrawOverlays(TiApplication.getAppRootOrCurrentActivity().getApplicationContext());
+	}
+
+	@Kroll.method
 	public void requestPermission() {
 		final Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
 				Uri.parse("package:" + TiApplication.getAppCurrentActivity().getPackageName()));
