@@ -51,17 +51,19 @@ public class WidgetProxy extends KrollProxy {
 	public void handleCreationArgs(KrollModule module, Object[] obj) {
 		super.handleCreationArgs(module, obj);
 		if (obj[0] instanceof TiViewProxy) {
-			addViewtoWindow((TiViewProxy) obj[0]);
+			addTiViewToWindowManager((TiViewProxy) obj[0]);
 			
 		} else
 			Log.e(LCAT, "Paramzer must be a viewproxy!");
 	}
-	private void addViewtoWindow(TiViewProxy proxy ) {
-		TiUIView contentView = proxy.forceCreateView();
+	
+	private void addTiViewToWindowManager(TiViewProxy proxy ) {
+		TiUIView contentView = proxy.getOrCreateView();
 		View outerView = contentView.getOuterView();
 		nativeView = outerView != null ? outerView : contentView.getNativeView();
 		Log.d(LCAT,"nativeView height="+nativeView.getHeight());
 		windowManager.addView(nativeView, params);
+		
 		nativeView.setOnTouchListener(new View.OnTouchListener() {
 			private int initialX;
 			private int initialY;
