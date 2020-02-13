@@ -18,6 +18,7 @@ import org.appcelerator.titanium.view.TiUIView;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,17 +28,25 @@ import android.view.WindowManager;
 public class WidgetProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "TiFloater";
-	final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-			WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
-			WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-			PixelFormat.TRANSLUCENT);
-	Context ctx = TiApplication.getAppRootOrCurrentActivity().getApplicationContext();
+	final WindowManager.LayoutParams params;
+	Context ctx;
 	private WindowManager windowManager;
 	private View nativeView;
 
 	// Constructor
 	public WidgetProxy() {
 		super();
+		ctx = TiApplication.getAppRootOrCurrentActivity().getApplicationContext();
+		int LAYOUT_TYPE;
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+	        LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+	    } else {
+	        LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_PHONE;
+	    }
+		params =  new WindowManager.LayoutParams(
+				WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
+				LAYOUT_TYPE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+				PixelFormat.TRANSLUCENT);
 		windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 	}
 
