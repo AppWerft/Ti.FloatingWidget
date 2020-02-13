@@ -26,10 +26,11 @@ content.add(Ti.UI.createLabel({
 
 FW.onResult = function(e) {
 	if (e.result == FW.RESULT_OK) {
-		fwView = FW.createWidget(content);
-	}	
+			}	
 }
 FW.requestPermission();
+if (FW.canDrawOverlays())
+	fwView = FW.createWidget(content);
 
 // ...
 fwView.destroy();
