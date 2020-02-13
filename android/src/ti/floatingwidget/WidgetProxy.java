@@ -56,6 +56,7 @@ public class WidgetProxy extends KrollProxy {
 			TiUIView contentView = ((TiViewProxy) obj[0]).getOrCreateView();
 			View outerView = contentView.getOuterView();
 			view = outerView != null ? outerView : contentView.getNativeView();
+			Log.d(LCAT,"height="+view.getHeight());
 			windowManager.addView(view, params);
 			view.setOnTouchListener(new View.OnTouchListener() {
 				private int initialX;
