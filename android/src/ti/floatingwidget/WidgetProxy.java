@@ -53,7 +53,7 @@ public class WidgetProxy extends KrollProxy {
 		super.handleCreationArgs(module, obj);
 		Log.d(LCAT,"handleCreationArgs " + obj.length);
 		if (obj[0] instanceof TiViewProxy) {
-			TiUIView contentView = ((TiViewProxy) obj[0]).peekView();
+			TiUIView contentView = ((TiViewProxy) obj[0]).forceCreateView();
 			Log.d(LCAT," contentView height="+contentView.toString());
 			View outerView = contentView.getOuterView();
 			view = outerView != null ? outerView : contentView.getNativeView();
