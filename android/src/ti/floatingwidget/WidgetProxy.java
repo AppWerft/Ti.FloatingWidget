@@ -11,6 +11,7 @@ package ti.floatingwidget;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.view.TiUIView;
 
@@ -53,6 +54,9 @@ public class WidgetProxy extends KrollProxy {
 					WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
 					WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 					PixelFormat.TRANSLUCENT);
+			
+			windowManager.addView(view, params);
+			
 			view.setOnTouchListener(new View.OnTouchListener() {
 				private int initialX;
 				private int initialY;
@@ -79,8 +83,7 @@ public class WidgetProxy extends KrollProxy {
 					return false;
 				}
 			});
-			// getting windows services and adding the floating view to it
-			windowManager.addView(view, params);
-		}
+			
+		} else Log.e(LCAT,"Paramzer must be a viewproxy!");
 	}
 }
