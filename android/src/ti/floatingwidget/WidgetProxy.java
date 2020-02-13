@@ -13,6 +13,7 @@ import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.content.Context;
@@ -27,8 +28,11 @@ import ti.modules.titanium.ui.ViewProxy;
 public class WidgetProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "TiFloater";
-	TiUIView tiview;
 	View view;
+	final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+			WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
+			WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+			PixelFormat.TRANSLUCENT);
 	Context ctx = TiApplication.getInstance().getApplicationContext();
 	private WindowManager windowManager;
 
@@ -45,18 +49,12 @@ public class WidgetProxy extends KrollProxy {
 	}
 
 	@Override
-	public void handleCreationArgs(KrollModule module, Object[] o) {
-		super.handleCreationArgs(module, o);
-		Log.d(LCAT,"handleCreationArgs " + o.length);
-		if (o[0] instanceof ViewProxy) {
-			ViewProxy vProxy = (ViewProxy) o[0];
-			tiview = vProxy.getOrCreateView();
-			view = tiview.getNativeView();
-			final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-					WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
-					WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-					PixelFormat.TRANSLUCENT);
-
+	public void handleCreationArgs(KrollModule module, Object[] obj) {
+		super.handleCreationArgs(module, obj);
+		Log.d(LCAT,"handleCreationArgs " + obj.length);
+		if (obj[0] instanceof TiViewProxy) {
+			TiUIView contentView = ((TiViewProxy) obj[0]).getOrCreateView();
+			view = contentView.getOuterView();
 			windowManager.addView(view, params);
 
 			view.setOnTouchListener(new View.OnTouchListener() {
