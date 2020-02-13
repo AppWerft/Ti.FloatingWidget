@@ -21,20 +21,19 @@ import android.graphics.PixelFormat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import ti.modules.titanium.ui.ViewProxy;
 
 // This proxy can be created by calling Floatingwidget.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = FloatingwidgetModule.class)
 public class WidgetProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "TiFloater";
-	View view;
 	final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 			WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
 			WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 			PixelFormat.TRANSLUCENT);
-	Context ctx = TiApplication.getInstance().getApplicationContext();
+	Context ctx = TiApplication.getAppRootOrCurrentActivity().getApplicationContext();
 	private WindowManager windowManager;
+	private View nativeView;
 
 	// Constructor
 	public WidgetProxy() {
@@ -44,49 +43,51 @@ public class WidgetProxy extends KrollProxy {
 
 	@Kroll.method
 	public void destroy() {
-		if (view != null)
-			windowManager.removeView(view);
+		if (nativeView != null)
+			windowManager.removeView(nativeView);
 	}
 
 	@Override
 	public void handleCreationArgs(KrollModule module, Object[] obj) {
 		super.handleCreationArgs(module, obj);
-		Log.d(LCAT,"handleCreationArgs " + obj.length);
 		if (obj[0] instanceof TiViewProxy) {
-			TiUIView contentView = ((TiViewProxy) obj[0]).forceCreateView();
-			Log.d(LCAT," contentView height="+contentView.toString());
-			View outerView = contentView.getOuterView();
-			view = outerView != null ? outerView : contentView.getNativeView();
-			Log.d(LCAT,"nativeView height="+view.getHeight());
-			windowManager.addView(view, params);
-			view.setOnTouchListener(new View.OnTouchListener() {
-				private int initialX;
-				private int initialY;
-				private float initialTouchX;
-				private float initialTouchY;
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						initialX = params.x;
-						initialY = params.y;
-						initialTouchX = event.getRawX();
-						initialTouchY = event.getRawY();
-						return true;
-
-					case MotionEvent.ACTION_MOVE:
-						// this code is helping the widget to move around the screen with fingers
-						params.x = initialX + (int) (event.getRawX() - initialTouchX);
-						params.y = initialY + (int) (event.getRawY() - initialTouchY);
-						// windowManager.updateViewLayout(view, params);
-						return true;
-					}
-					return false;
-				}
-			});
-
+			addViewtoWindow((TiViewProxy) obj[0]);
+			
 		} else
 			Log.e(LCAT, "Paramzer must be a viewproxy!");
+	}
+	private void addViewtoWindow(TiViewProxy proxy ) {
+		TiUIView contentView = proxy.forceCreateView();
+		View outerView = contentView.getOuterView();
+		nativeView = outerView != null ? outerView : contentView.getNativeView();
+		Log.d(LCAT,"nativeView height="+nativeView.getHeight());
+		windowManager.addView(nativeView, params);
+		nativeView.setOnTouchListener(new View.OnTouchListener() {
+			private int initialX;
+			private int initialY;
+			private float initialTouchX;
+			private float initialTouchY;
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					initialX = params.x;
+					initialY = params.y;
+					initialTouchX = event.getRawX();
+					initialTouchY = event.getRawY();
+					return true;
+
+				case MotionEvent.ACTION_MOVE:
+					// this code is helping the widget to move around the screen with fingers
+					params.x = initialX + (int) (event.getRawX() - initialTouchX);
+					params.y = initialY + (int) (event.getRawY() - initialTouchY);
+					// windowManager.updateViewLayout(view, params);
+					return true;
+				}
+				return false;
+			}
+		});
+
 	}
 }
