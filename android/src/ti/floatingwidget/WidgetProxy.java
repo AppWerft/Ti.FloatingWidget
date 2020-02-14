@@ -37,13 +37,11 @@ public class WidgetProxy extends KrollProxy {
 	public WidgetProxy() {
 		super();
 		ctx = TiApplication.getAppRootOrCurrentActivity().getApplicationContext();
-		int LAYOUT_TYPE;
-		 LAYOUT_TYPE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) 
-				 ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
-	        WindowManager.LayoutParams.TYPE_PHONE;
-		params =  new WindowManager.LayoutParams(
-				WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
-				LAYOUT_TYPE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+		int LAYOUT_TYPE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+				? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+				: WindowManager.LayoutParams.TYPE_PHONE;
+		params = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
+				WindowManager.LayoutParams.WRAP_CONTENT, LAYOUT_TYPE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSLUCENT);
 		windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 	}
@@ -59,20 +57,20 @@ public class WidgetProxy extends KrollProxy {
 		super.handleCreationArgs(module, obj);
 		if (obj[0] instanceof TiViewProxy) {
 			addTiViewToWindowManager((TiViewProxy) obj[0]);
-			
+
 		} else
 			Log.e(LCAT, "Paramzer must be a viewproxy!");
 	}
-	
-	private void addTiViewToWindowManager(TiViewProxy proxy ) {
+
+	private void addTiViewToWindowManager(TiViewProxy proxy) {
 		// extracting TiUIView from proxy:
 		TiUIView contentView = proxy.getOrCreateView();
 		// extracting native view from TiUIView:
 		View outerView = contentView.getOuterView();
 		nativeView = outerView != null ? outerView : contentView.getNativeView();
-		Log.d(LCAT,"nativeView height="+nativeView.getHeight()); // 0 !
+		Log.d(LCAT, "nativeView height=" + nativeView.getHeight()); // 0 !
 		windowManager.addView(nativeView, params);
-		
+
 		nativeView.setOnTouchListener(new View.OnTouchListener() {
 			private int initialX;
 			private int initialY;
