@@ -38,11 +38,9 @@ public class WidgetProxy extends KrollProxy {
 		super();
 		ctx = TiApplication.getAppRootOrCurrentActivity().getApplicationContext();
 		int LAYOUT_TYPE;
-	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-	        LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-	    } else {
-	        LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_PHONE;
-	    }
+		 LAYOUT_TYPE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) 
+				 ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
+	        WindowManager.LayoutParams.TYPE_PHONE;
 		params =  new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
 				LAYOUT_TYPE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
